@@ -1,0 +1,15 @@
+Nog niet aangepast:
+Input shaping
+Adaptive step smoothing
+bed grootte
+controler fan pin
+lcd info menu
+Babystepping ISR/Always available
+Probing Margins (advanced)
+TMC home phase
+square wave stepping
+tmc debug
+host action commands
+soft reset
+
+werkt, alleen achtergrond niet.

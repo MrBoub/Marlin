@@ -30,7 +30,7 @@
  *
  * Basic settings can be found in Configuration.h
  */
-#define CONFIGURATION_ADV_H_VERSION 02010300
+#define CONFIGURATION_ADV_H_VERSION 02010200
 
 // @section develop
 
@@ -304,8 +304,8 @@
   #define THERMAL_PROTECTION_HYSTERESIS 4     // Degrees Celsius
 
   //#define ADAPTIVE_FAN_SLOWING              // Slow part cooling fan if temperature drops
-  #if ENABLED(ADAPTIVE_FAN_SLOWING) && EITHER(MPCTEMP, PIDTEMP)
-    //#define TEMP_TUNING_MAINTAIN_FAN        // Don't slow fan speed during M303 or M306 T
+  #if BOTH(ADAPTIVE_FAN_SLOWING, PIDTEMP)
+    //#define NO_FAN_SLOWING_IN_PID_TUNING    // Don't slow fan speed during M303
   #endif
 
   /**
@@ -375,7 +375,7 @@
 #endif
 
 #if ENABLED(PIDTEMP)
-  // Add an additional term to the heater power, proportional to the extrusion speed.
+  // Add an experimental additional term to the heater power, proportional to the extrusion speed.
   // A well-chosen Kc value should add just enough power to melt the increased material volume.
   //#define PID_EXTRUSION_SCALING
   #if ENABLED(PID_EXTRUSION_SCALING)
@@ -384,7 +384,7 @@
   #endif
 
   /**
-   * Add an additional term to the heater power, proportional to the fan speed.
+   * Add an experimental additional term to the heater power, proportional to the fan speed.
    * A well-chosen Kf value should add just enough power to compensate for power-loss from the cooling fan.
    * You can either just add a constant compensation with the DEFAULT_Kf value
    * or follow the instruction below to get speed-dependent compensation.
@@ -450,9 +450,6 @@
 #define AUTOTEMP
 #if ENABLED(AUTOTEMP)
   #define AUTOTEMP_OLDWEIGHT    0.98  // Factor used to weight previous readings (0.0 < value < 1.0)
-  #define AUTOTEMP_MIN          210
-  #define AUTOTEMP_MAX          250
-  #define AUTOTEMP_FACTOR       0.1f
   // Turn on AUTOTEMP on M104/M109 by default using proportions set here
   //#define AUTOTEMP_PROPORTIONAL
   #if ENABLED(AUTOTEMP_PROPORTIONAL)
@@ -472,10 +469,10 @@
  * Thermistors able to support high temperature tend to have a hard time getting
  * good readings at room and lower temperatures. This means TEMP_SENSOR_X_RAW_LO_TEMP
  * will probably be caught when the heating element first turns on during the
- * preheating process, which will trigger a MINTEMP error as a safety measure
+ * preheating process, which will trigger a mintemp_error as a safety measure
  * and force stop everything.
  * To circumvent this limitation, we allow for a preheat time (during which,
- * MINTEMP error won't be triggered) and add a min_temp buffer to handle
+ * mintemp_error won't be triggered) and add a min_temp buffer to handle
  * aberrant readings.
  *
  * If you want to enable this feature for your hotend thermistor(s)
@@ -483,7 +480,7 @@
  */
 
 // The number of consecutive low temperature errors that can occur
-// before a MINTEMP error is triggered. (Shouldn't be more than 10.)
+// before a mintemp_error is triggered. (Shouldn't be more than 10.)
 //#define MAX_CONSECUTIVE_LOW_TEMPERATURE_ERROR_ALLOWED 0
 
 /**
@@ -493,8 +490,7 @@
  * the minimum temperature your thermistor can read. The lower the better/safer.
  * This shouldn't need to be more than 30 seconds (30000)
  */
-//#define PREHEAT_TIME_HOTEND_MS 0
-//#define PREHEAT_TIME_BED_MS 0
+//#define MILLISECONDS_PREHEAT_TIME 0
 
 // @section extruder
 
@@ -539,9 +535,9 @@
  * The fan turns on automatically whenever any driver is enabled and turns
  * off (or reduces to idle speed) shortly after drivers are turned off.
  */
-//#define USE_CONTROLLER_FAN
+#define USE_CONTROLLER_FAN
 #if ENABLED(USE_CONTROLLER_FAN)
-  //#define CONTROLLER_FAN_PIN -1           // Set a custom pin for the controller fan
+  #define CONTROLLER_FAN_PIN PB6           // Set a custom pin for the controller fan
   //#define CONTROLLER_FAN2_PIN -1          // Set a custom pin for second controller fan
   //#define CONTROLLER_FAN_USE_Z_ONLY       // With this option only the Z axis is considered
   //#define CONTROLLER_FAN_IGNORE_Z         // Ignore Z stepper. Useful when stepper timeout is disabled.
@@ -843,20 +839,20 @@
   //#define Z_MULTI_ENDSTOPS          // Other Z axes have their own endstops
   #if ENABLED(Z_MULTI_ENDSTOPS)
     #define Z2_USE_ENDSTOP   _XMAX_   // Z2 endstop board plug. Don't forget to enable USE_*_PLUG.
-    #define Z2_ENDSTOP_ADJUSTMENT 0   // Z2 offset relative to Z endstop
+    #define Z2_ENDSTOP_ADJUSTMENT 0   // Z2 offset relative to Y endstop
   #endif
   #ifdef Z3_DRIVER_TYPE
     //#define INVERT_Z3_VS_Z_DIR      // Z3 direction signal is the opposite of Z
     #if ENABLED(Z_MULTI_ENDSTOPS)
       #define Z3_USE_ENDSTOP   _YMAX_ // Z3 endstop board plug. Don't forget to enable USE_*_PLUG.
-      #define Z3_ENDSTOP_ADJUSTMENT 0 // Z3 offset relative to Z endstop
+      #define Z3_ENDSTOP_ADJUSTMENT 0 // Z3 offset relative to Y endstop
     #endif
   #endif
   #ifdef Z4_DRIVER_TYPE
     //#define INVERT_Z4_VS_Z_DIR      // Z4 direction signal is the opposite of Z
     #if ENABLED(Z_MULTI_ENDSTOPS)
       #define Z4_USE_ENDSTOP   _ZMAX_ // Z4 endstop board plug. Don't forget to enable USE_*_PLUG.
-      #define Z4_ENDSTOP_ADJUSTMENT 0 // Z4 offset relative to Z endstop
+      #define Z4_ENDSTOP_ADJUSTMENT 0 // Z4 offset relative to Y endstop
     #endif
   #endif
 #endif
@@ -977,7 +973,7 @@
    * If not defined, probe limits will be used.
    * Override with 'M422 S<index> X<pos> Y<pos>'.
    */
-  //#define Z_STEPPER_ALIGN_XY { {  10, 190 }, { 100,  10 }, { 190, 190 } }
+  //#define Z_STEPPER_ALIGN_XY { {  37, 105 }, { 180,  105 } }
 
   /**
    * Orientation for the automatically-calculated probe positions.
@@ -1021,7 +1017,7 @@
   // On a 300mm bed a 5% grade would give a misalignment of ~1.5cm
   #define G34_MAX_GRADE              5    // (%) Maximum incline that G34 will handle
   #define Z_STEPPER_ALIGN_ITERATIONS 5    // Number of iterations to apply during alignment
-  #define Z_STEPPER_ALIGN_ACC        0.02 // Stop iterating early if the accuracy is better than this
+  #define Z_STEPPER_ALIGN_ACC        0.01 // Stop iterating early if the accuracy is better than this
   #define RESTORE_LEVELING_AFTER_G34      // Restore leveling after G34 is done?
   // After G34, re-home Z (G28 Z) or just calculate it from the last probe heights?
   // Re-homing might be more precise in reproducing the actual 'G28 Z' homing height, especially on an uneven bed.
@@ -1083,8 +1079,8 @@
  *  X<1>         Set the given parameters only for the X axis.
  *  Y<1>         Set the given parameters only for the Y axis.
  */
-//#define INPUT_SHAPING_X
-//#define INPUT_SHAPING_Y
+#define INPUT_SHAPING_X
+#define INPUT_SHAPING_Y
 #if EITHER(INPUT_SHAPING_X, INPUT_SHAPING_Y)
   #if ENABLED(INPUT_SHAPING_X)
     #define SHAPING_FREQ_X  40          // (Hz) The default dominant resonant frequency on the X axis.
@@ -1096,7 +1092,7 @@
   #endif
   //#define SHAPING_MIN_FREQ  20        // By default the minimum of the shaping frequencies. Override to affect SRAM usage.
   //#define SHAPING_MAX_STEPRATE 10000  // By default the maximum total step rate of the shaped axes. Override to affect SRAM usage.
-  //#define SHAPING_MENU                // Add a menu to the LCD to set shaping parameters.
+  #define SHAPING_MENU                // Add a menu to the LCD to set shaping parameters.
 #endif
 
 #define AXIS_RELATIVE_MODES { false, false, false, false }
@@ -1274,7 +1270,7 @@
  * vibration and surface artifacts. The algorithm adapts to provide the best possible step smoothing at the
  * lowest stepping frequencies.
  */
-//#define ADAPTIVE_STEP_SMOOTHING
+#define ADAPTIVE_STEP_SMOOTHING
 
 /**
  * Custom Microstepping
@@ -1395,7 +1391,7 @@
 
   #if HAS_BED_PROBE
     // Add calibration in the Probe Offsets menu to compensate for X-axis twist.
-    //#define X_AXIS_TWIST_COMPENSATION
+    #define X_AXIS_TWIST_COMPENSATION
     #if ENABLED(X_AXIS_TWIST_COMPENSATION)
       /**
        * Enable to init the Probe Z-Offset when starting the Wizard.
@@ -1413,13 +1409,10 @@
   #endif
 
   // Include a page of printer information in the LCD Main Menu
-  //#define LCD_INFO_MENU
+  #define LCD_INFO_MENU
   #if ENABLED(LCD_INFO_MENU)
     //#define LCD_PRINTER_INFO_IS_BOOTSCREEN // Show bootscreen(s) instead of Printer Info pages
   #endif
-
-  // Add 50/100mm moves to MarlinUI even with a smaller bed
-  //#define LARGE_MOVE_ITEMS
 
   // BACK menu items keep the highlight at the top
   //#define TURBO_BACK_MENU_ITEM
@@ -1429,10 +1422,12 @@
 
 #endif // HAS_MARLINUI_MENU
 
-#if HAS_DISPLAY
+#if ANY(HAS_DISPLAY, DWIN_LCD_PROUI, DWIN_CREALITY_LCD_JYERSUI)
   //#define SOUND_MENU_ITEM   // Add a mute option to the LCD menu
   #define SOUND_ON_DEFAULT    // Buzzer/speaker default enabled state
+#endif
 
+#if EITHER(HAS_DISPLAY, DWIN_LCD_PROUI)
   // The timeout to return to the status screen from sub-menus
   //#define LCD_TIMEOUT_TO_STATUS 15000   // (ms)
 
@@ -1481,7 +1476,7 @@
     #endif
   #endif
 
-#endif // HAS_DISPLAY
+#endif // HAS_DISPLAY || DWIN_LCD_PROUI
 
 // Add 'M73' to set print job progress, overrides Marlin's built-in estimate
 //#define SET_PROGRESS_MANUALLY
@@ -1869,11 +1864,11 @@
 
   #define DGUS_UPDATE_INTERVAL_MS  500    // (ms) Interval between automatic screen updates
 
-  #if DGUS_UI_IS(FYSETC, MKS, HIPRECY)
+  #if ANY(DGUS_LCD_UI_FYSETC, DGUS_LCD_UI_MKS, DGUS_LCD_UI_HIPRECY)
     #define DGUS_PRINT_FILENAME           // Display the filename during printing
     #define DGUS_PREHEAT_UI               // Display a preheat screen during heatup
 
-    #if DGUS_UI_IS(FYSETC, MKS)
+    #if EITHER(DGUS_LCD_UI_FYSETC, DGUS_LCD_UI_MKS)
       //#define DGUS_UI_MOVE_DIS_OPTION   // Disabled by default for FYSETC and MKS
     #else
       #define DGUS_UI_MOVE_DIS_OPTION     // Enabled by default for UI_HIPRECY
@@ -2065,9 +2060,9 @@
  */
 #define BABYSTEPPING
 #if ENABLED(BABYSTEPPING)
-  //#define INTEGRATED_BABYSTEPPING         // EXPERIMENTAL integration of babystepping into the Stepper ISR
+  #define INTEGRATED_BABYSTEPPING         // EXPERIMENTAL integration of babystepping into the Stepper ISR
   //#define BABYSTEP_WITHOUT_HOMING
-  //#define BABYSTEP_ALWAYS_AVAILABLE       // Allow babystepping at all times (not just during movement).
+  #define BABYSTEP_ALWAYS_AVAILABLE       // Allow babystepping at all times (not just during movement).
   //#define BABYSTEP_XY                     // Also enable X/Y Babystepping. Not supported on DELTA!
   #define BABYSTEP_INVERT_Z false           // Change if Z babysteps should go the other way
   //#define BABYSTEP_MILLIMETER_UNITS       // Specify BABYSTEP_MULTIPLICATOR_(XY|Z) in mm instead of micro-steps
@@ -2089,7 +2084,7 @@
   #define BABYSTEP_ZPROBE_OFFSET          // Combine M851 Z and Babystepping
   #if ENABLED(BABYSTEP_ZPROBE_OFFSET)
     //#define BABYSTEP_HOTEND_Z_OFFSET      // For multiple hotends, babystep relative Z offsets
-    //#define BABYSTEP_ZPROBE_GFX_OVERLAY   // Enable graphical overlay on Z-offset editor
+    #define BABYSTEP_ZPROBE_GFX_OVERLAY   // Enable graphical overlay on Z-offset editor
   #endif
 #endif
 
@@ -2119,6 +2114,7 @@
   #endif
   //#define ADVANCE_K_EXTRA       // Add a second linear advance constant, configurable with M900 L.
   //#define LA_DEBUG              // Print debug information to serial during operation. Disable for production use.
+  #define EXPERIMENTAL_SCURVE   // Allow S-Curve Acceleration to be used with LA.
   #define ALLOW_LOW_EJERK       // Allow a DEFAULT_EJERK value of <10. Recommended for direct drive hotends.
   //#define EXPERIMENTAL_I2S_LA   // Allow I2S_STEPPER_STREAM to be used with LA. Performance degrades as the LA step rate reaches ~20kHz.
 #endif
@@ -2172,11 +2168,11 @@
  * probe points will follow. This prevents any change from causing
  * the probe to be unable to reach any points.
  */
-#if PROBE_SELECTED && !IS_KINEMATIC
-  //#define PROBING_MARGIN_LEFT PROBING_MARGIN
-  //#define PROBING_MARGIN_RIGHT PROBING_MARGIN
-  //#define PROBING_MARGIN_FRONT PROBING_MARGIN
-  //#define PROBING_MARGIN_BACK PROBING_MARGIN
+#if PROBE_SELECTED && !IS_KINEMATIC //Net tussen magneten in dus perfec
+  #define PROBING_MARGIN_LEFT 43
+  #define PROBING_MARGIN_RIGHT 20
+  //#define PROBING_MARGIN_FRONT 10
+  //#define PROBING_MARGIN_BACK 10
 #endif
 
 #if EITHER(MESH_BED_LEVELING, AUTO_BED_LEVELING_UBL)
@@ -2220,7 +2216,7 @@
  * For more details see https://marlinfw.org/docs/features/probe_temp_compensation.html
  */
 //#define PTC_PROBE    // Compensate based on probe temperature
-//#define PTC_BED      // Compensate based on bed temperature
+#define PTC_BED      // Compensate based on bed temperature
 //#define PTC_HOTEND   // Compensate based on hotend temperature
 
 #if ANY(PTC_PROBE, PTC_BED, PTC_HOTEND)
@@ -2259,7 +2255,7 @@
   // G76 options
   #if BOTH(PTC_PROBE, PTC_BED)
     // Park position to wait for probe cooldown
-    #define PTC_PARK_POS   { 0, 0, 100 }
+    #define PTC_PARK_POS   { 245, 0, 100 }
 
     // Probe position to probe and wait for probe to reach target temperature
     //#define PTC_PROBE_POS  { 12.0f, 7.3f } // Example: MK52 magnetic heatbed
@@ -3122,7 +3118,7 @@
   #define U_HYBRID_THRESHOLD       3  // [mm/s]
   #define V_HYBRID_THRESHOLD       3
   #define W_HYBRID_THRESHOLD       3
-  #define E0_HYBRID_THRESHOLD     30
+  #define E0_HYBRID_THRESHOLD      0
   #define E1_HYBRID_THRESHOLD     30
   #define E2_HYBRID_THRESHOLD     30
   #define E3_HYBRID_THRESHOLD     30
@@ -3191,19 +3187,19 @@
    *
    * Values from 0..1023, -1 to disable homing phase for that axis.
    */
-   //#define TMC_HOME_PHASE { 896, 896, 896 }
+   #define TMC_HOME_PHASE { 640, 640, -1 }
 
   /**
    * Beta feature!
    * Create a 50/50 square wave step pulse optimal for stepper drivers.
    */
-  //#define SQUARE_WAVE_STEPPING
+  #define SQUARE_WAVE_STEPPING
 
   /**
    * Enable M122 debugging command for TMC stepper drivers.
    * M122 S0/1 will enable continuous reporting.
    */
-  //#define TMC_DEBUG
+  #define TMC_DEBUG
 
   /**
    * You can set your own advanced settings by filling in predefined functions.
@@ -3849,7 +3845,7 @@
  * Host Prompt Support enables Marlin to use the host for user prompts so
  * filament runout and other processes can be managed from the host side.
  */
-//#define HOST_ACTION_COMMANDS
+#define HOST_ACTION_COMMANDS
 #if ENABLED(HOST_ACTION_COMMANDS)
   //#define HOST_PAUSE_M76                // Tell the host to pause in response to M76
   //#define HOST_PROMPT_SUPPORT           // Initiate host prompts to get user feedback
@@ -4248,7 +4244,7 @@
 /**
  * Software Reset options
  */
-//#define SOFT_RESET_VIA_SERIAL         // 'KILL' and '^X' commands will soft-reset the controller
+#define SOFT_RESET_VIA_SERIAL         // 'KILL' and '^X' commands will soft-reset the controller
 //#define SOFT_RESET_ON_KILL            // Use a digital button to soft-reset the controller after KILL
 
 // Report uncleaned reset reason from register r2 instead of MCUSR. Supported by Optiboot on AVR.
