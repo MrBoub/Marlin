@@ -1,8 +1,8 @@
 Nog niet aangepast:
-Input shaping
-Adaptive step smoothing
-bed grootte
-controler fan pin
+xx Input shaping
+xx Adaptive step smoothing
+xx bed grootte
+xx controler fan pin
 lcd info menu
 Babystepping ISR/Always available
 Probing Margins (advanced)
@@ -13,3 +13,19 @@ host action commands
 soft reset
 
 werkt, alleen achtergrond niet.
+
+lcd info menu
+xx Babystepping ISR/Always available
+xx Probing Margins (advanced)
+TMC home phase
+square wave stepping
+tmc debug
+xx host action commands
+soft reset
+
+- werkt
+lcd info
+tmc home phase
+square wve stepping
+tmc debug
+soft reset

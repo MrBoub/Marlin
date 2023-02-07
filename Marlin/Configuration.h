@@ -1748,15 +1748,15 @@
 // @section geometry
 
 // The size of the printable area
-#define X_BED_SIZE 200 //242
-#define Y_BED_SIZE 200 //210
+#define X_BED_SIZE 242 //242
+#define Y_BED_SIZE 210 //210
 
 // Travel limits (linear=mm, rotational=°) after homing, corresponding to endstop positions.
 #define X_MIN_POS 0 
-#define Y_MIN_POS 0 //-4
+#define Y_MIN_POS -4 //-4
 #define Z_MIN_POS 0
-#define X_MAX_POS X_BED_SIZE //245
-#define Y_MAX_POS Y_BED_SIZE //212.5
+#define X_MAX_POS 245 //245
+#define Y_MAX_POS 212.5 //212.5
 #define Z_MAX_POS 200
 //#define I_MIN_POS 0
 //#define I_MAX_POS 50
@@ -3363,8 +3363,8 @@
   //#define NEOPIXEL_PIN                4 // LED driving pin
   //#define NEOPIXEL2_TYPE  NEOPIXEL_TYPE
   //#define NEOPIXEL2_PIN               5
-  #define NEOPIXEL_PIXELS              30 // Number of LEDs in the strip. (Longest strip when NEOPIXEL2_SEPARATE is disabled.)
-  #define NEOPIXEL_IS_SEQUENTIAL          // Sequential display for temperature change - LED by LED. Disable to change all LEDs at once.
+  #define NEOPIXEL_PIXELS              3 // Number of LEDs in the strip. (Longest strip when NEOPIXEL2_SEPARATE is disabled.)
+  //#define NEOPIXEL_IS_SEQUENTIAL          // Sequential display for temperature change - LED by LED. Disable to change all LEDs at once.
   #define NEOPIXEL_BRIGHTNESS         127 // Initial brightness (0-255)
   //#define NEOPIXEL_STARTUP_TEST         // Cycle through colors at startup
 
@@ -3380,9 +3380,9 @@
   #endif
 
   // Use some of the NeoPixel LEDs for static (background) lighting
-  //#define NEOPIXEL_BKGD_INDEX_FIRST   0 // Index of the first background LED
-  //#define NEOPIXEL_BKGD_INDEX_LAST    5 // Index of the last background LED
-  //#define NEOPIXEL_BKGD_COLOR { 255, 255, 255, 0 }  // R, G, B, W
+  #define NEOPIXEL_BKGD_INDEX_FIRST   2 // Index of the first background LED
+  #define NEOPIXEL_BKGD_INDEX_LAST    2 // Index of the last background LED
+  #define NEOPIXEL_BKGD_COLOR { 127, 127, 127, 0 }  // R, G, B, W
   //#define NEOPIXEL_BKGD_ALWAYS_ON       // Keep the backlight on when other NeoPixels are off
 #endif
 
