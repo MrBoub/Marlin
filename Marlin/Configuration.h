@@ -1222,7 +1222,7 @@
  * Override with M92
  *                                      X, Y, Z [, I [, J [, K...]]], E0 [, E1[, E2...]]
  */
-#define DEFAULT_AXIS_STEPS_PER_UNIT   { 100, 100, 400, 426 } //426
+#define DEFAULT_AXIS_STEPS_PER_UNIT   { 100, 100, 400, 413.54 } 
 
 /**
  * Default Max Feed Rate (linear=mm/s, rotational=°/s)
@@ -1748,15 +1748,15 @@
 // @section geometry
 
 // The size of the printable area
-#define X_BED_SIZE 242 //242
+#define X_BED_SIZE 250 //242
 #define Y_BED_SIZE 210 //210
 
 // Travel limits (linear=mm, rotational=°) after homing, corresponding to endstop positions.
 #define X_MIN_POS 0 
-#define Y_MIN_POS -4 //-4
+#define Y_MIN_POS -8 
 #define Z_MIN_POS 0
-#define X_MAX_POS 245 //245
-#define Y_MAX_POS 212.5 //212.5
+#define X_MAX_POS 253.5 
+#define Y_MAX_POS 212.5 
 #define Z_MAX_POS 200
 //#define I_MIN_POS 0
 //#define I_MAX_POS 50
@@ -2127,8 +2127,8 @@
 
 // Manually set the home position. Leave these undefined for automatic settings.
 // For DELTA this is the top-center of the Cartesian print volume.
-//#define MANUAL_X_HOME_POS 0
-//#define MANUAL_Y_HOME_POS 0
+//#define MANUAL_X_HOME_POS -3
+//#define MANUAL_Y_HOME_POS -4
 //#define MANUAL_Z_HOME_POS 0
 //#define MANUAL_I_HOME_POS 0
 //#define MANUAL_J_HOME_POS 0
@@ -2147,8 +2147,8 @@
 #define Z_SAFE_HOMING
 
 #if ENABLED(Z_SAFE_HOMING)
-  #define Z_SAFE_HOMING_X_POINT X_CENTER  //35
-  #define Z_SAFE_HOMING_Y_POINT Y_CENTER  //11
+  #define Z_SAFE_HOMING_X_POINT 35  //35
+  #define Z_SAFE_HOMING_Y_POINT 11  //11
 #endif
 
 // Homing speeds (linear=mm/min, rotational=°/min)
